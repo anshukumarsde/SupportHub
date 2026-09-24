@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import {
   createTicket,
-  getTickets,
   type TicketRow,
   updateTicketStatus,
 } from "../../../lib/db";
 
 export const runtime = "nodejs";
-
-export function GET() {
-  return NextResponse.json(getTickets());
-}
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
