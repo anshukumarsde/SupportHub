@@ -6,7 +6,7 @@ import TicketTable, { type Ticket } from "./TicketTable";
 
 export default function Dashboard({ initialTickets }: { initialTickets: Ticket[] }) {
   const [tickets, setTickets] = useState(initialTickets);
-  const openTickets = tickets.filter((ticket) => ticket.status !== "Done").length;
+  const openTickets = tickets.filter((ticket) => ticket.status === "Open").length;
   const workingTickets = tickets.filter((ticket) => ticket.status === "Working on it").length;
   const finishedTickets = tickets.filter((ticket) => ticket.status === "Done").length;
 
@@ -32,7 +32,7 @@ export default function Dashboard({ initialTickets }: { initialTickets: Ticket[]
           <p className="mt-2 text-3xl font-bold">{tickets.length}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">Need an answer</p>
+          <p className="text-sm text-slate-500">Open</p>
           <p className="mt-2 text-3xl font-bold text-amber-600">{openTickets}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-5">
@@ -40,7 +40,7 @@ export default function Dashboard({ initialTickets }: { initialTickets: Ticket[]
           <p className="mt-2 text-3xl font-bold text-blue-600">{workingTickets}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">Finished</p>
+          <p className="text-sm text-slate-500">Done</p>
           <p className="mt-2 text-3xl font-bold text-emerald-600">{finishedTickets}</p>
         </div>
       </section>
