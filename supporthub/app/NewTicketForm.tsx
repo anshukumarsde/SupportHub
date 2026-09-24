@@ -1,11 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { Ticket } from "./TicketTable";
 
 export default function NewTicketForm({ onCreated }: { onCreated: (ticket: Ticket) => void }) {
-  const router = useRouter();
   const [subject, setSubject] = useState("");
   const [customer, setCustomer] = useState("");
   const [error, setError] = useState("");
@@ -34,7 +32,6 @@ export default function NewTicketForm({ onCreated }: { onCreated: (ticket: Ticke
     setCustomer("");
     setSaving(false);
     onCreated(newTicket);
-    router.refresh();
   }
 
   return (

@@ -25,25 +25,21 @@ export default function TicketTable({
   tickets,
   onTicketUpdated,
 }: TicketTableProps) {
-  const [ticketValues, setTicketValues] = useState(
-    Object.fromEntries(tickets.map((ticket) => [ticket.id, ticket])),
-  );
   const [savingId, setSavingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function saveTicket(id: string, changes: Partial<Pick<Ticket, "subject" | "customer" | "status">>) {
-    const previousTicket = ticketValues[id];
-    const nextTicket = { ...previousTicket, ...changes };
-    setTicketValues((current) => ({ ...current, [id]: nextTicket }));
+  async function changeStatus(ticket: Ticket, status: Ticket["status"]) {
+    const previousTicket = ticket;
+    const nextTicket = { ...ticket, status, updated: "just now" };
     onTicketUpdated(nextTicket);
-    setSavingId(id);
+    setSavingId(ticket.id);
     setError("");
 
     try {
       const response = await fetch("/api/tickets", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...changes }),
+        body: JSON.stringify({ id: ticket.id, status }),
       });
 
       if (!response.ok) {
@@ -52,10 +48,8 @@ export default function TicketTable({
       }
 
       const savedTicket = (await response.json()) as Ticket;
-      setTicketValues((current) => ({ ...current, [id]: savedTicket }));
       onTicketUpdated(savedTicket);
     } catch (statusError) {
-      setTicketValues((current) => ({ ...current, [id]: previousTicket }));
       onTicketUpdated(previousTicket);
       setError(statusError instanceof Error ? statusError.message : "Could not update the ticket.");
     } finally {
@@ -75,57 +69,29 @@ export default function TicketTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {tickets.map((ticket) => {
-            const currentTicket = ticketValues[ticket.id] ?? ticket;
-
-            return (
+          {tickets.map((ticket) => (
             <tr className="hover:bg-slate-50" key={ticket.id}>
               <td className="px-6 py-4">
-                <input
-                  aria-label={`Question for ${ticket.id}`}
-                  className="w-full rounded border border-transparent bg-transparent px-1 text-sm font-semibold text-slate-800 outline-none focus:border-slate-300 focus:bg-white"
-                  defaultValue={currentTicket.subject}
-                  disabled={savingId === ticket.id}
-                  onBlur={(event) => {
-                    const subject = event.target.value.trim();
-                    if (subject && subject !== currentTicket.subject) {
-                      void saveTicket(ticket.id, { subject });
-                    }
-                  }}
-                />
+                <p className="text-sm font-semibold text-slate-800">{ticket.subject}</p>
                 <p className="mt-1 text-xs text-slate-400">{ticket.id}</p>
               </td>
-              <td className="px-4 py-4">
-                <input
-                  aria-label={`Customer for ${ticket.id}`}
-                  className="w-full rounded border border-transparent bg-transparent px-1 text-sm text-slate-700 outline-none focus:border-slate-300 focus:bg-white"
-                  defaultValue={currentTicket.customer}
-                  disabled={savingId === ticket.id}
-                  onBlur={(event) => {
-                    const customer = event.target.value.trim();
-                    if (customer && customer !== currentTicket.customer) {
-                      void saveTicket(ticket.id, { customer });
-                    }
-                  }}
-                />
-              </td>
+              <td className="px-4 py-4 text-sm text-slate-700">{ticket.customer}</td>
               <td className="px-4 py-4">
                 <select
                   aria-label={`Status for ${ticket.subject}`}
-                  className={`rounded-full border-0 px-2.5 py-1 text-xs font-semibold outline-none ${statusStyles[currentTicket.status]}`}
+                  className={`rounded-full border-0 px-2.5 py-1 text-xs font-semibold outline-none ${statusStyles[ticket.status]}`}
                   disabled={savingId === ticket.id}
-                  onChange={(event) => void saveTicket(ticket.id, { status: event.target.value as Ticket["status"] })}
-                  value={currentTicket.status}
+                  onChange={(event) => void changeStatus(ticket, event.target.value as Ticket["status"])}
+                  value={ticket.status}
                 >
                   <option>Open</option>
                   <option>Working on it</option>
                   <option>Done</option>
                 </select>
               </td>
-              <td className="px-6 py-4 text-right text-sm text-slate-500">{currentTicket.updated}</td>
+              <td className="px-6 py-4 text-right text-sm text-slate-500">{ticket.updated}</td>
             </tr>
-            );
-          })}
+          ))}
         </tbody>
       </table>
       {error && <p className="px-6 py-3 text-sm text-red-600">{error}</p>}

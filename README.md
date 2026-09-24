@@ -27,10 +27,11 @@ When you open SupportHub:
 2. The page reads tickets from the local SQLite database.
 3. The page sends that list to `TicketTable`.
 4. `TicketTable` displays each ticket in a table.
-5. The new-ticket form sends new tickets to the tickets API.
-6. The API saves the ticket in SQLite, and the page refreshes to show it.
-7. You can change a ticket status directly in the table.
-8. Tailwind CSS provides the colors, spacing, borders, and layout.
+5. The new-ticket form sends a new ticket to the tickets API.
+6. The API saves the ticket in SQLite, and the dashboard adds it to the list.
+7. You can change only the status directly in the table.
+8. The dashboard updates the counts immediately and the API saves the change.
+9. Tailwind CSS provides the colors, spacing, borders, and layout.
 
 In simple terms, `page.tsx` decides **what information the page has**, and
 `TicketTable.tsx` decides **how the ticket list looks**.
@@ -65,10 +66,11 @@ SupportHub/
 
 | File | What it does |
 | --- | --- |
-| `page.tsx` | Builds the main dashboard, reads tickets from the database, and shows the summary numbers. |
-| `TicketTable.tsx` | A reusable React component that displays tickets in rows and columns. |
+| `page.tsx` | Reads tickets from the database and loads the dashboard. |
+| `Dashboard.tsx` | Holds the ticket list and calculates the four summary counts. |
+| `TicketTable.tsx` | Displays tickets and lets you change a ticket's status. |
 | `NewTicketForm.tsx` | Shows the form for creating a new ticket. |
-| `api/tickets/route.ts` | Provides the API for reading tickets, creating tickets, and changing status. |
+| `api/tickets/route.ts` | Provides the API for reading tickets, creating tickets, and changing one status. |
 | `layout.tsx` | Provides the shared page wrapper, browser title, fonts, and global CSS connection. |
 | `globals.css` | Loads Tailwind CSS and contains styles that apply across the app. |
 | `favicon.ico` | The small icon shown in the browser tab. |
@@ -145,13 +147,13 @@ npm run start
 
 ## Making a simple change
 
-To change the ticket form or how new tickets are saved, open:
+To change the ticket form or how new tickets are created, open:
 
 ```text
 supporthub/app/NewTicketForm.tsx
 ```
 
-To change the table columns or how a status looks, open:
+To change the table columns or status dropdown, open:
 
 ```text
 supporthub/app/TicketTable.tsx

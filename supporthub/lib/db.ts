@@ -90,32 +90,3 @@ export function updateTicketStatus(
     .prepare("SELECT id, subject, customer, status, updated FROM tickets WHERE id = ?")
     .get(id) as TicketRow | undefined;
 }
-
-export function updateTicket(
-  id: string,
-  input: Partial<Pick<TicketRow, "subject" | "customer" | "status">>,
-): TicketRow | undefined {
-  const ticket = database
-    .prepare("SELECT id, subject, customer, status, updated FROM tickets WHERE id = ?")
-    .get(id) as TicketRow | undefined;
-
-  if (!ticket) {
-    return undefined;
-  }
-
-  const updatedTicket = {
-    ...ticket,
-    ...input,
-    updated: "just now",
-  };
-
-  database
-    .prepare(`
-      UPDATE tickets
-      SET subject = @subject, customer = @customer, status = @status, updated = @updated
-      WHERE id = @id
-    `)
-    .run(updatedTicket);
-
-  return updatedTicket;
-}
