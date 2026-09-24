@@ -39,6 +39,7 @@ In simple terms, `page.tsx` decides **what information the page has**, and
 
 - The total number of tickets
 - The number of tickets that still need an answer
+- The number of tickets being worked on
 - The number of finished tickets
 - Recent customer questions
 - The person who asked each question

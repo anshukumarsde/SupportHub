@@ -35,6 +35,7 @@ export default function TicketTable({
     const previousTicket = ticketValues[id];
     const nextTicket = { ...previousTicket, ...changes };
     setTicketValues((current) => ({ ...current, [id]: nextTicket }));
+    onTicketUpdated(nextTicket);
     setSavingId(id);
     setError("");
 
@@ -55,6 +56,7 @@ export default function TicketTable({
       onTicketUpdated(savedTicket);
     } catch (statusError) {
       setTicketValues((current) => ({ ...current, [id]: previousTicket }));
+      onTicketUpdated(previousTicket);
       setError(statusError instanceof Error ? statusError.message : "Could not update the ticket.");
     } finally {
       setSavingId(null);
